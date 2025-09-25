@@ -1,0 +1,41 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-17",
+            "path": "C:\\Users\\User\\.gradle\\jdks\\jdk-17.0.11+9",
+            "default": true
+        }
+    ],
+    // Note: The path above is a common location for Gradle-downloaded JDKs.
+    // If you have Java 17 installed elsewhere, you can update the path.
+    // You may need to run a `gradlew build` once for Gradle to download the JDK.
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Java Program",
+            "request": "launch",
+            "mainClass": ""
+        },
+        
+
+
+
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Run with Gradle",
+            "request": "launch",
+            "mainClass": "stocksynapse.StockSynapseApp",
+            "projectName": "stocksynapse"
+        }
+    ]
+}

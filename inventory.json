@@ -1,0 +1,34 @@
+[
+    {
+        "quantity": 2,
+        "price": 100,
+        "name": "Balls",
+        "description": "New stock",
+        "id": "b83e026c-bddd-43cb-8e14-a7fa3a6cb9d8",
+        "category": "Nike Balls"
+    },
+    {
+        "quantity": 3,
+        "price": 1000,
+        "name": "clothes",
+        "description": "The last stock that was bought",
+        "id": "32987f36-0370-45f3-8b8c-13a31abc74d4",
+        "category": "dresses"
+    },
+    {
+        "quantity": 23,
+        "price": 1500,
+        "name": "shoes",
+        "description": "The stock that was in on 25th september",
+        "id": "81100e93-3b37-4143-a83a-c4b872b252a1",
+        "category": "Men shoes"
+    },
+    {
+        "quantity": 10,
+        "price": 500,
+        "name": "sandles",
+        "description": "new brand",
+        "id": "9cb701a8-3e13-44b2-8234-37cf91a19299",
+        "category": "slides"
+    }
+]
