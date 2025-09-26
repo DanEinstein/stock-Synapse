@@ -102,25 +102,6 @@ public class InventoryService {
     }
 
     /**
-     * Deletes a product from the inventory by its ID.
-     * 
-     * @param id The ID of the product to delete.
-     * @return true if the product was found and deleted, false otherwise.
-     */
-    public boolean deleteProduct(String id) {
-        String sql = "DELETE FROM products WHERE id = ?";
-
-        try (Connection conn = getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, id);
-            int affectedRows = pstmt.executeUpdate();
-            return affectedRows > 0;
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to delete product from the database.", e);
-        }
-    }
-
-    /**
      * Retrieves a single product by its ID.
      * 
      * @param id The ID of the product to find.

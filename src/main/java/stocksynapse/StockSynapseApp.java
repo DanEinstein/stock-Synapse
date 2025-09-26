@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import javax.swing.SwingUtilities;
+import com.formdev.flatlaf.FlatLightLaf;
 import javax.swing.JOptionPane;
 
 public class StockSynapseApp {
@@ -31,6 +32,9 @@ public class StockSynapseApp {
     }
 
     public static void main(String[] args) {
+        // Set the modern FlatLaf look and feel for the entire application
+        FlatLightLaf.setup();
+
         // The InventoryService will be shared across different panels.
         InventoryService inventoryService = new InventoryService();
 

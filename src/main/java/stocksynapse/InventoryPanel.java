@@ -1,5 +1,6 @@
 package stocksynapse;
 
+import javax.swing.border.CompoundBorder;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -20,29 +21,53 @@ public class InventoryPanel extends JPanel {
 
         setLayout(new BorderLayout(10, 10));
         setBorder(new EmptyBorder(10, 10, 10, 10));
-        setBackground(new Color(235, 245, 235)); // Match the app's background color
+
+        // --- Define a modern color palette ---
+        Color backgroundGreen = new Color(236, 248, 241); // Soft mint green
+        Color accentBlue = new Color(70, 130, 180); // Steel Blue
+        Color darkText = new Color(40, 40, 40);
+        Color tableHeaderBg = new Color(210, 230, 218);
+        Color tableGrid = new Color(200, 220, 210);
+        Color tableAlternateRow = new Color(247, 252, 249);
+
+        setBackground(backgroundGreen);
 
         // --- Title ---
         JLabel titleLabel = new JLabel("Inventory Management", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        titleLabel.setForeground(darkText);
+        titleLabel.setBorder(new EmptyBorder(10, 0, 20, 0));
         add(titleLabel, BorderLayout.NORTH);
 
         // --- Inventory Table ---
         inventoryTable = new JTable(tableModel);
         inventoryTable.setFillsViewportHeight(true);
-        inventoryTable.setFont(new Font("Arial", Font.PLAIN, 14));
-        inventoryTable.setRowHeight(25);
+        inventoryTable.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        inventoryTable.setRowHeight(30);
         inventoryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // Allow only one row to be selected
+        inventoryTable.setGridColor(tableGrid);
+        inventoryTable.setIntercellSpacing(new Dimension(0, 1)); // Use grid lines for horizontal separation only
+        inventoryTable.setShowVerticalLines(false);
+
+        // Style the table header
+        inventoryTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        inventoryTable.getTableHeader().setBackground(tableHeaderBg);
+        inventoryTable.getTableHeader().setForeground(darkText);
+        inventoryTable.getTableHeader().setBorder(new CompoundBorder(
+                inventoryTable.getTableHeader().getBorder(),
+                new EmptyBorder(5, 5, 5, 5)));
 
         // Enable sorting and filtering
         TableRowSorter<ProductTableModel> sorter = new TableRowSorter<>(tableModel);
         inventoryTable.setRowSorter(sorter);
 
         JScrollPane scrollPane = new JScrollPane(inventoryTable);
+        scrollPane.setBorder(BorderFactory.createLineBorder(tableGrid));
         add(scrollPane, BorderLayout.CENTER);
 
         // --- Control Buttons Panel ---
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setBackground(backgroundGreen);
         JButton addButton = new JButton("Add New Product");
         JButton editButton = new JButton("Edit Selected");
         JButton deleteButton = new JButton("Delete Selected");
@@ -53,6 +78,17 @@ public class InventoryPanel extends JPanel {
         buttonPanel.add(deleteButton);
         buttonPanel.add(refreshButton);
         add(buttonPanel, BorderLayout.SOUTH);
+
+        // Style the buttons
+        for (Component comp : buttonPanel.getComponents()) {
+            if (comp instanceof JButton) {
+                JButton button = (JButton) comp;
+                button.setFont(new Font("Segoe UI", Font.BOLD, 12));
+                button.setBackground(accentBlue);
+                button.setForeground(Color.WHITE);
+                button.setFocusPainted(false); // Remove the focus border for a cleaner look
+            }
+        }
 
         // --- Action Listeners ---
         addButton.addActionListener(e -> openAddProductDialog());

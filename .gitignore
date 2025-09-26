@@ -1,0 +1,28 @@
+# Gradle
+# Ignore Gradle build output and cache directories.
+/build
+/.gradle
+
+# IDE configuration files
+# Ignore settings from common IDEs like VS Code and IntelliJ.
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Local Configuration
+# This is the most important part: it prevents your secrets from being committed.
+local.properties
+
+# Old data file, now replaced by the database.
+inventory.json
+
+# Build reports, logs, and other generated files
+*.log
+hs_err_pid*
+problems-report.html
+
+# OS-generated files
+.DS_Store
+Thumbs.db

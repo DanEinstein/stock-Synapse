@@ -14,8 +14,8 @@ public class ForecastingService {
 
     private final String apiKey;
     private final HttpClient httpClient;
-    private static final String API_URL_FORMAT = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s";
-    private static final String MODEL_NAME = "gemini-1.5-flash-latest";
+    private static final String API_URL_FORMAT = "https://generativelanguage.googleapis.com/v1/models/%s:generateContent?key=%s";
+    private static final String MODEL_NAME = "gemini-pro";
 
     public ForecastingService(String apiKey) {
         if (apiKey == null || apiKey.trim().isEmpty()) {
@@ -27,43 +27,68 @@ public class ForecastingService {
 
     /**
      * Generates a sales forecast for a given product using the Gemini API.
+     * Includes a retry mechanism for transient API errors like rate limiting.
      *
      * @param product The product to be forecasted.
      * @return A string containing the AI-generated forecast and advice.
-     * @throws Exception if the API call fails.
+     * @throws ForecastingException if the API call fails after all retries.
      */
     public String generateForecast(Product product) throws ForecastingException {
         String prompt = createPromptForProduct(product);
+        final int MAX_RETRIES = 3;
+        int attempt = 0;
 
-        // Create the JSON payload
-        JSONObject content = new JSONObject();
-        content.put("text", prompt);
+        while (attempt < MAX_RETRIES) {
+            // Create the JSON payload
+            JSONObject content = new JSONObject();
+            content.put("text", prompt);
 
-        JSONObject payload = new JSONObject()
-                .put("contents", new org.json.JSONArray()
-                        .put(new JSONObject().put("parts", new org.json.JSONArray().put(content))));
+            JSONObject payload = new JSONObject()
+                    .put("contents", new org.json.JSONArray()
+                            .put(new JSONObject().put("parts", new org.json.JSONArray().put(content))));
 
-        // Build the HTTP request
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(String.format(API_URL_FORMAT, MODEL_NAME, apiKey)))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(payload.toString()))
-                .build();
+            // Build the HTTP request
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(String.format(API_URL_FORMAT, MODEL_NAME, apiKey)))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(payload.toString()))
+                    .build();
 
-        try {
-            // Send the request and get the response
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            try {
+                // Send the request and get the response
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-            if (response.statusCode() != 200) {
-                throw new ForecastingException(
-                        "Gemini API returned an error. Status: " + response.statusCode() + "\nResponse: "
-                                + response.body());
+                if (response.statusCode() == 429) {
+                    // Handle rate limiting specifically with a retry
+                    if (attempt < MAX_RETRIES - 1) {
+                        long retryAfter = 30L; // Default wait time
+                        System.out.println("Quota exceeded. Retrying in " + retryAfter + " seconds...");
+                        try {
+                            Thread.sleep(retryAfter * 1000);
+                        } catch (InterruptedException interruptedException) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                } else if (response.statusCode() != 200) {
+                    // For any other non-200 status code, throw an exception immediately
+                    throw new ForecastingException(
+                            "Gemini API returned an error. Status: " + response.statusCode() + "\nResponse: "
+                                    + response.body());
+                } else {
+                    // Success! Parse and return the response.
+                    return parseResponse(response.body());
+                }
+            } catch (IOException | InterruptedException e) {
+                // Network errors can be transient, so we'll allow a retry
+                if (attempt == MAX_RETRIES - 1) {
+                    throw new ForecastingException(
+                            "Network error while communicating with Gemini API after multiple retries.", e);
+                }
+                System.out.println("Network error. Retrying...");
             }
-            // Parse the response to extract the generated text
-            return parseResponse(response.body());
-        } catch (IOException | InterruptedException e) {
-            throw new ForecastingException("Network error while communicating with Gemini API.", e);
+            attempt++;
         }
+        throw new ForecastingException("Failed to generate forecast after all retries.");
     }
 
     private String createPromptForProduct(Product product) {

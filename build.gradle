@@ -22,6 +22,12 @@ repositories {
 dependencies {
     // This dependency is for the JSON library used to read/write the inventory file.
     implementation 'org.json:json:20231013'
+
+    // This dependency is for the MySQL database connector.
+    implementation 'com.mysql:mysql-connector-j:8.0.33'
+
+    // This dependency is for the FlatLaf modern look and feel.
+    implementation 'com.formdev:flatlaf:3.4.1'
 }
 
 application {
